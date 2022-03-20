@@ -30,11 +30,11 @@
             $params = array_values(array_filter(array_keys($acceptParams), 
                 function($key) { return isset($_GET[$key]); }));
 
-            $query = 'SELECT q.id, q.quote, a.author, c.category 
-                FROM quotes q 
-                LEFT JOIN authors a 
-                ON q.authorId = a.id 
-                LEFT JOIN categories c 
+            $query = 'SELECT q.id, q.quote, a.author, c.category, 
+                FROM quotes q, 
+                LEFT JOIN authors a, 
+                ON q.authorId = a.id, 
+                LEFT JOIN categories c, 
                 ON q.categoryId = c.id';
             if (count($params) > 0) {
                 $query .= ' WHERE ' . join(' AND ', array_map(function($key) 
@@ -45,7 +45,7 @@
             $stmt = $db->prepare($query);
 
             $stmt->execute(array_map(function($key) { return $_GET[$key]; }, $params));
-            
+
             $rowCount = $stmt->rowCount();
             if ($rowCount > 0) {
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
