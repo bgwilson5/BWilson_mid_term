@@ -7,6 +7,7 @@
     include_once '../../config/Database.php';
 
     try {
+        //connect to db
         $database = new Database();
         $db = $database->connect();
     } catch (PDOException $e) {
