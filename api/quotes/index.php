@@ -10,6 +10,7 @@
         //connect to db
         $database = new Database();
         $db = $database->connect();
+        //if db connect error
     } catch (PDOException $e) {
         error_log($e);
         http_response_code(500);
@@ -18,19 +19,33 @@
         );
         return;
     }
-
+        //inputs from user
     $input = json_decode(file_get_contents("php://input"), true);
 
     switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
-            $acceptParams = [ 'id' => 'q', 'quote' => 'q', 'authorId' => 'q', 'categoryId' => 'q', 'author' => 'a', 'category' => 'c' ];
-            $params = array_values(array_filter(array_keys($acceptParams), function($key) { return isset($_GET[$key]); }));
-            $query = 'SELECT q.id, q.quote, a.author, c.category FROM quotes q LEFT JOIN authors a ON q.authorId = a.id LEFT JOIN categories c ON q.categoryId = c.id';
+            //"a" is for author table, "c" is for category table
+            $acceptParams = [ 'id' => 'q', 'quote' => 'q', 'authorId' => 'q', 
+                'categoryId' => 'q', 'author' => 'a', 'category' => 'c' ];
+            $params = array_values(array_filter(array_keys($acceptParams), 
+                function($key) { return isset($_GET[$key]); }));
+
+            $query = 'SELECT q.id, q.quote, a.author, c.category 
+                FROM quotes q 
+                LEFT JOIN authors a 
+                ON q.authorId = a.id 
+                LEFT JOIN categories c 
+                ON q.categoryId = c.id';
             if (count($params) > 0) {
-                $query .= ' WHERE ' . join(' AND ', array_map(function($key) use($acceptParams) { return $acceptParams[$key] . '.' . $key . ' = ?'; }, $params));
+                $query .= ' WHERE ' . join(' AND ', array_map(function($key) 
+                use($acceptParams) { 
+                    return $acceptParams[$key] . '.' . $key . ' = ?'; }, $params));
             }
+
             $stmt = $db->prepare($query);
+
             $stmt->execute(array_map(function($key) { return $_GET[$key]; }, $params));
+            
             $rowCount = $stmt->rowCount();
             if ($rowCount > 0) {
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
