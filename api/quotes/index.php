@@ -25,20 +25,12 @@
     switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
             //"a" is for author table, "c" is for category table
-            $acceptParams = [ 'id' => 'q', 'quote' => 'q', 'authorId' => 'q', 
-                'categoryId' => 'q', 'author' => 'a', 'category' => 'c' ];
-            $params = array_values(array_filter(array_keys($acceptParams), 
-                function($key) { return isset($_GET[$key]); }));
+            $acceptParams = [ 'id' => 'q', 'quote' => 'q', 'authorId' => 'q', 'categoryId' => 'q', 'author' => 'a', 'category' => 'c' ];
+            $params = array_values(array_filter(array_keys($acceptParams), function($key) { return isset($_GET[$key]); }));
 
-            $query = 'SELECT q.id, q.quote, a.author, c.category, 
-                FROM quotes q, 
-                LEFT JOIN authors a, 
-                ON q.authorId = a.id, 
-                LEFT JOIN categories c, 
-                ON q.categoryId = c.id';
+            $query = 'SELECT q.id, q.quote, a.author, c.category, FROM quotes q LEFT JOIN authors a ON q.authorId = a.id LEFT JOIN categories c ON q.categoryId = c.id';
             if (count($params) > 0) {
-                $query .= ' WHERE ' . join(' AND ', array_map(function($key) 
-                use($acceptParams) { 
+                $query .= ' WHERE ' . join(' AND ', array_map(function($key) use($acceptParams) { 
                     return $acceptParams[$key] . '.' . $key . ' = ?'; }, $params));
             }
 
