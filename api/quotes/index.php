@@ -21,7 +21,7 @@
     }
         //inputs from user
     $input = json_decode(file_get_contents("php://input"), true);
-
+        //staments for requests
     switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
             $acceptParams = [ 'id' => 'q', 'quote' => 'q', 'authorId' => 'q', 'categoryId' => 'q', 'author' => 'a', 'category' => 'c' ];
